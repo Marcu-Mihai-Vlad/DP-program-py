@@ -1,8 +1,10 @@
 import time
+
 # Global Variables
-dp = False # global decleration, value doesn't matter
+dp = False # global declaration, value doesn't matter
 clause_list = list()
 # ----------------------
+
 def clause_split1 (og_input):
     # Returns clauses split in a list in the order of the original input
     clist = list()
@@ -28,6 +30,7 @@ def resolve(aux1, aux2):
     clause2 = aux2.split(',')
     complementary_check = False
     index_c1 = 0
+
     while index_c1 < len(clause1):
         index_c2 = 0
         while index_c2 < len(clause2):
@@ -45,10 +48,13 @@ def resolve(aux1, aux2):
                 index_c1 -= 1
                 break
             index_c2 += 1
+
         if complementary_check:
             break
         index_c1 += 1
+
     resolved_clause = ''
+
     if not complementary_check:
         return "NOT_COMPLEMENTARY"
     else:
@@ -86,6 +92,7 @@ def resolve(aux1, aux2):
                 resolved_split[index2] = aux
             index2 = index2 + 1
         index1 = index1 + 1
+
     resolved_clause = ','.join(resolved_split)
 
     # Clause verification, if empty return tautology, if empty and both clauses only had one literal return unsat. if not
@@ -137,13 +144,15 @@ def resolution():
 def OneLiteral():
     global clause_list
     clause_double_list = list()
-    length = len(clause_list)
     return_value = 'ONE LITERAL APPLIED'
+
+    length = len(clause_list)
     i = 0
     while i < length:
         literal_list = clause_list[i].split(',')
         clause_double_list.append(literal_list)
         i += 1
+
     single_literal = 'placeholder'
     length = len(clause_double_list)
     while single_literal != '':
@@ -191,21 +200,25 @@ def OneLiteral():
     for clause in clause_double_list:
         unsplit_clause = ""
         first_check = True
+
         for literal in clause:
             if not first_check:
                 unsplit_clause += ','
             unsplit_clause += literal
             first_check = False
         new_clause_list.append(unsplit_clause)
+
     clause_list = new_clause_list
     return return_value
 
 def PureLiteral():
     global clause_list
+
     str_all_literals = ','.join(clause_list)
     all_literal_list = str_all_literals.split(',')
     all_literal_set = set(all_literal_list)
     all_literal_list = list(all_literal_set)
+
     for literal in all_literal_list:
         if literal[0] == "!":
             if literal[1:] in all_literal_list:
@@ -215,9 +228,11 @@ def PureLiteral():
             if "!" + literal in all_literal_list:
                 all_literal_list.remove(literal)
                 all_literal_list.remove("!" + literal)
+
     # all_literal_list contains only the pure literals
     if len(all_literal_list) == 0:
        return "NO PURE LITERALS"
+
     clause_double_list = list()
     length = len(clause_list)
     i = 0
@@ -225,6 +240,7 @@ def PureLiteral():
         literal_list = clause_list[i].split(',')
         clause_double_list.append(literal_list)
         i += 1
+
     i = 0
     length2 = len(clause_double_list)
     for literal in clause_double_list[i]:
@@ -233,6 +249,7 @@ def PureLiteral():
             length2 -= 1
             i -= 1
     # clause_double_list contains the set of clauses after Pure Literal has been applied
+
     new_clause_list = list()
     for clause in clause_double_list:
         unsplit_clause = ""
@@ -253,6 +270,7 @@ def davis_putnam():
     # Repeats applying one literal then pure literal until both don't apply anymore
     ol_output = "placeholder"
     pl_output = 'placeholder'
+
     while ol_output != "ONE LITERAL APPLIED" and pl_output != "PURE LITERAL APPLIED":
         ol_output = OneLiteral()
         if ol_output == 'SATISFIABLE':
@@ -265,13 +283,17 @@ def davis_putnam():
     return resolution()
 
 def main():
-    og_input = "[!A,!B,!C],[D,E,!A],[D,B],[C]"
     global dp
     global clause_list
+
+    og_input = str(input("Input set of clauses (must be formated like this:[A,B],[!A,C],[!A]): \n"))
+    dp = input("Enable DP? 1 - yes / 0 - no \n")
+
     clause_list = clause_split1(og_input) # Splits the clauses into a list
-    dp = 1
+
     beginning = time.perf_counter()
     time.sleep(1)
+
     if dp == 1:
         output = davis_putnam()
         if output == "SATISFIABLE":
@@ -282,6 +304,8 @@ def main():
             print(output)
     else:
         print(resolution())
+
     end = time.perf_counter()
     print("Elapsed time: ", end - beginning)
+
 main()
